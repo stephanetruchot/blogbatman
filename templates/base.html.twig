@@ -1,13 +1,108 @@
+{# Variable Twig contenant le nom de la route actuelle#}
+{% set currentRoute = app.request.attributes.get('_route') %}
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content='ie=edge'>
+    <title>{% block title %}Nouvelle page{% endblock %} - {{ site_name }} </title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css')}}">
+    <link rel="stylesheet" href="{{ asset('css/styles.css')}}">
+    {# inclusion des fichiers css individuels des pages #}
+    {% block css %}{% endblock %}
+</head>
+<body>
+    {# Navbar principale #}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark main-navbar">
 
-        {% block javascripts %}{% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-    </body>
+        <!-- TODO: Paramétriser le nom -->
+        <a href="{{ path('main_home') }}" class="navbar-brand"><img src="{{ asset('images/embleme-batman.png') }}" alt="" class="img-fluid main-navbar-logo">{{ site_name }}</a>
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-navbar-content" aria-controls="main-navbar-content" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        {# TODO: Penser à dynamiser la classe active #}
+        <div class="collapse navbar-collapse" id="main-navbar-content">
+
+            {# Paquet de boutons à gauche #}
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item{{ currentRoute == 'main_home' ? ' active' }}">
+                    <a href="{{ path('main_home') }}" class="nav-link"><i class="fas fa-home mx-1"></i>Accueil</a>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle {{ currentRoute == 'blog_publication_list' ? ' active' : '' }}" href="#" id="blog-dropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-newspaper mr-1"></i>Blog
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="blog-dropdown">
+
+                        <a href="{{ path('blog_publication_list') }}" class="dropdown-item">Publications</a>
+
+                        {# Bouton vers la création d'une nouvelle publication si l'utilisateur possède le rôle admin #}
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="{{ path('blog_new_publication') }}">Nouvelle Publication</a>
+                        {% endif %}
+                    </div>
+                </li>
+
+            </ul>
+
+
+
+            {# Paquet de boutons à droite #}
+            <ul class="navbar-nav ml-auto pr-2">
+
+                {# Si l'utilisateur est connecté, on affiche des boutons (profils, déconnexion, etc) sinon on affiche d'autres boutons (connexion, inscription, etc) #}
+                {% if app.user %}
+
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle text-light" id="profil-dropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-user mx-1"></i>{{ app.user.pseudonym }}
+                        </a>
+
+                        <div class="dropdown-menu" aria-labelledby="profil-dropdown">
+                            <a href="{{ path('app_logout') }}" class="dropdown-item"><i class="fas fa-sign-out-alt mr-1"></i>Déconnexion</a>
+                        </div>
+                    </li>
+
+                {% else %}
+
+                    <li class="nav-item{{ currentRoute == 'app_register' ? ' active' }}">
+                        <a href="{{ path('app_register') }}" class="nav-link"><i class="fas fa-user-plus mx-1"></i>Inscription</a>
+                    </li>
+
+                    <li class="nav-item{{ currentRoute == 'app_login' ? ' active' }}">
+                        <a href="{{ path('app_login') }}" class="nav-link"><i class="fas fa-sign-in-alt mx-1"></i>Connexion</a>
+                    </li>
+
+                {% endif %}
+
+            </ul>
+
+            {# Formulaire de recherche #}
+            <form action="{{ path('blog_search') }}" method="GET" class="form-inline my-2 my-lg-0">
+                <input type="search" class="form-control mr-sm-2" placeholder="Trouver un article" name="q">
+                <button class="btn btn-outline-success my-2 my-sm-0"><i class="fas fa-search"></i></button>
+            </form>
+
+        </div>
+
+    </nav>
+    {# affichage du contenu principal des pages #}
+    {% block body %}
+
+    {% endblock %}
+
+
+
+    <script src="{{ asset('js/jquery-3.5.1.slim.min.js')}}"></script>
+    <script src="{{ asset('js/bootstrap.bundle.min.js')}}"></script>
+    <!--block des js individuels des pages-->
+    {% block js %}{% endblock %}
+</body>
 </html>

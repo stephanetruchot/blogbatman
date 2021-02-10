@@ -1,0 +1,101 @@
+{% extends 'base.html.twig' %}
+
+{% set query = app.request.query.get('g') %}
+
+{% block title %}Résultat de la recherche xxx {% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+
+        {# Titre h1 #}
+        <div class="row">
+            <h1 class="col-12 text-center my-5">Résultat de la recherche {{ query }}</h1>
+        </div>
+
+        <div class="row">
+
+            <div class="col-12 col-md-8 offset-md-2">
+
+                {# Nombre total d'articles #}
+                <div class="row">
+                    <p class="col-12 text-center">Nombre de résultats : {{ articles.getTotalItemCount }}</p>
+                </div>
+
+
+
+                {% if articles is empty %}
+                    <div class="row">
+                        <p class="col-12 text-center alert alert-warning">Aucune résultat ne correspond à cette recherche.</p>
+                    </div>
+                {% else %}
+
+                    {# menu de naviguation knp-paginator #}
+                    <div class="row">
+                        <div class="col-12 my-3 text-center">
+                            <div class="d-inline-block">
+                                {{ knp_pagination_render(articles) }}
+                            </div>
+                        </div>
+                    </div>
+
+
+                    {% for article in articles %}
+
+                    <div class="col-12">
+
+                        <div class="card my-3 bg-black">
+                            <div class="card-header">
+                                <a href="{{ path('blog_publication_view', {slug: article.slug}) }}"><i class="far fa-newspaper mr-2"></i>{{ article.title }}</a>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-2">
+                                    {{ article.content|striptags|slice(0,150) }} ...<a href="{{ path('blog_publication_view', {slug: article.slug}) }}">Lire la suite</a>
+                                </div>
+                                <footer class="blockquote-footer">Publié le <strong>{{ article.publicationDate|date("d/m/Y à H\\hi") }}</strong> par <strong>{{ article.author.pseudonym }}</strong></footer>
+
+                                {# Si l'utilisateur a le rôle admin, on affiche un petit menu avec des boutons de modification/suppression de l'article #}
+                                {% if is_granted('ROLE_ADMIN') %}
+
+                                    <p class="mb-0 mt-3">
+                                        <a href="{{ path('blog_publication_edit', {id: article.id}) }}" class="text-warning mr-3">
+                                            <i class="fas fa-edit mr-1"></i>
+                                            Modifier
+                                        </a>
+
+
+
+                                        <a onclick="return confirm('Êtes-vous sûr de vouloir supprimer la publication ?')" class="text-danger" href="{{ path('blog_publication_delete', {
+                                                id: article.id,
+                                                csrf_token: csrf_token('blog_publication_delete_' ~ article.id)
+                                            }) }}">
+                                            <i class="fas fa-trash-alt mr-1"></i>
+                                            Supprimer
+                                        </a>
+                                    </p>
+
+                                {% endif %}
+                            </div>
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+                    {# menu de naviguation knp-paginator #}
+                    <div class="row">
+                        <div class="col-12 my-3 text-center">
+                            <div class="d-inline-block">
+                                {{ knp_pagination_render(articles) }}
+                            </div>
+                        </div>
+                    </div>
+
+                {% endif %}
+            </div>
+        </div>
+
+
+
+    </div>
+
+{% endblock %}

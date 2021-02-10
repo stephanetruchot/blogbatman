@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modification de la photo de profil{% endblock %}
+
+{% block body %}
+
+    <div class="container-fluid">
+
+        {# affichage des message flashes de type "success" si il y en a #}
+        {% include 'partials/flashes/success.html.twig' %}
+
+        {# Titre H1 #}
+        <div class="row">
+            <h1 class="col-12 text-center my-5">Modification de la photo de profil</h1>
+        </div>
+
+        <div class="row">
+
+            <div class="col-12 col-md-8 offset-md-2 bg-dark p-3">
+
+                <div class="row">
+
+                    <div class="col-12 col-md-6 offset-3 change-photo-form">
+
+                        {{ form(form) }}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+{% endblock %}
+
+{% block js %}
+
+<script>
+        // Code jquery permettant d'afficher dynamiquement un texte ainsi que le nom du fichier actuellement sélectionné dans le champ
+        $('.change-photo-form .custom-file-label').text('Choisir un fichier');
+
+        $('.change-photo-form .custom-file-input').change(function(){
+            $(this).next('.custom-file-label').html( $(this).val().replace('C:\\fakepath\\', " ") );
+        });
+</script>
+{% endblock %}

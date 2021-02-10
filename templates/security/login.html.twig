@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connectez-vous !{% endblock %}
+
+{% block body %}
+    <div class="container">
+
+        {# affichage des message flashes de type "success" si il y en a #}
+        {% include 'partials/flashes/success.html.twig' %}
+
+        {# affichage des message flashes de type "error" si il y en a #}
+        {% include 'partials/flashes/error.html.twig' %}
+
+        {# Titre H1 #}
+        <div class="row">
+            <h1 class="col-12 text-center my-5">Connexion</h1>
+        </div>
+
+        {# Formulaire de connexion #}
+        <div class="row">
+
+            <div class="col-12 col-md-4 offset-md-4">
+
+                <form method="POST" action="{{ path('app_login') }}">
+
+                    {# Si le formulaire possède une erreur, on l'affiche #}
+                    {% if error %}
+                        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                    {% endif %}
+
+                    {# champ email #}
+                    <div class="form-group">
+                        <label for="inputEmail">Email</label>
+                        <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" required autofocus>
+                    </div>
+
+                    {# champ mot de passe #}
+                    <div class="form-group">
+                        <label for="inputPassword">Mot de passe</label>
+                        <input type="password" name="password" id="inputPassword" class="form-control" required>
+                    </div>
+
+                    {# champ invisible anti attaque CSRF #}
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                    {# bouton de validation #}
+                    <input type="submit" class="btn btn-outline-primary col-12">
+
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

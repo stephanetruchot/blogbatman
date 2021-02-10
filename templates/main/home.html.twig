@@ -1,0 +1,95 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block body %}
+
+    <div class="container-fluid">
+
+        {# affichage des message flashes de type "success" si il y en a #}
+        {% include 'partials/flashes/success.html.twig' %}
+
+        {# Titre H1 #}
+        <div class="row">
+            <h1 class="col-12 text-center my-5">Le blog de Batman</h1>
+        </div>
+
+        {# Contenus lorem opsum pour habiller le site #}
+        <div class="row">
+            <h2 class="col-12 text-center my-4">Lorem ipsum dolor sit amet consectetur.</h2>
+
+            <p class="col-12 col-md-10 offset-md-1 text-center">Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci, doloremque numquam. Laudantium dolor inventore id quaerat incidunt quo sapiente deleniti temporibus ex quod, nisi quidem voluptatum iure molestias laborum voluptate.
+            Molestias obcaecati laboriosam veniam provident fugit consequatur fugiat dolores culpa rem, quas ipsam, aut voluptatibus? Atque unde ab dolorem sed cumque debitis, deserunt quis sapiente saepe consequatur iste officiis nostrum.
+            Pariatur iste atque vero molestias architecto, praesentium ut dignissimos sed itaque porro quo distinctio deserunt? Dolorum iste exercitationem id sequi ex consectetur error fuga minus sunt, repellat aspernatur perferendis vel?
+            Aliquam dolore officiis beatae veniam rem dignissimos dolorum quasi eligendi omnis, vero ducimus animi error assumenda in quam ullam. Aliquid voluptates magnam atque doloremque nihil hic neque suscipit natus at!
+            Sapiente praesentium esse porro! Tempora temporibus suscipit ipsa, quae sint accusantium expedita aut voluptate. Recusandae laborum excepturi suscipit. Ut aut dolor cumque facilis aliquid perferendis nemo fugit maiores, porro odit!</p>
+
+        </div>
+
+        {# affichage de l'image #}
+        <div class="batman-cover row my-5"></div>
+
+        {# H2 #}
+        <div class="row">
+            <h2 class="col-12 text-center">Dernières publications</h2>
+
+
+            {# Si il n'y a pas d'articles, on affiche un message en conséquence #}
+            {% if articles is empty %}
+
+                <div class="row">
+                    <h2 class="col-12 text-center">Aucune publications a afficher</h2>
+                </div>
+
+            {% else %}
+
+                {% for article in articles %}
+                    <div class="col-12">
+                        <div class="card my-3 bg-black">
+
+                            {# Titre de l'article, cliquable vers la page détaillée de l'article #}
+                            <div class="card-header">
+                                <a href="{{ path('blog_publication_view', {slug: article.slug}) }}"><i class="far fa-newspaper mr-2"></i>{{ article.title }}</a>
+                            </div>
+
+                            <div class="card-body">
+                                {# Affichage du contenu de l'article, tronqué à 150 caractères, sans balises html, suivi de "..." et d'un lien "lire la suite" #}
+                                <div class="mb-2">
+                                    {{ article.content|striptags|slice(0,150) }}...<a href="{{ path('blog_publication_view', {slug: article.slug}) }}">Lire la suite</a>
+                                </div>
+                                {# Affichage de la date de publication et du pseudonyme de l'auteur #}
+                                <footer class="blockquote-footer">Publié le <strong>{{ article.publicationDate|date("d/m/Y à H\\hi") }}</strong> par <strong>{{ article.author.pseudonym }}</strong></footer>
+
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    <div class="row mb-5">
+
+        <h2 class="text-center col-12 my-4">Lorem ipsum dolor sit amet.</h2>
+
+        <p class="col-12 col-md-10 offset-md-1 text-center mb-5">Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores vitae architecto molestias dicta! Dicta eligendi perspiciatis ullam saepe dolorem modi, et recusandae illo deleniti praesentium in, cumque possimus ratione, sed magni quia iste labore aliquam fuga laborum nostrum? Odio nobis consequuntur corrupti possimus rerum voluptas aliquam iure fuga quisquam ducimus quos ea corporis, itaque error pariatur voluptatum dicta minima! Ducimus, ab aut. Accusantium eveniet ab obcaecati, voluptatum distinctio excepturi hic officia! Est, sint! Asperiores corrupti eveniet eligendi hic doloremque officiis adipisci. Debitis a exercitationem suscipit nemo nulla unde illum minima, magnam quos, voluptate blanditiis ut. Explicabo culpa recusandae fugiat sit.</p>
+
+    </div>
+
+{% endblock %}
+
+{% block css %}
+    <style>
+        .batman-cover{
+            background-image: url('{{ asset('images/batman-cover.png') }}');
+            height: 400px;
+            background-attachment: fixed;
+            background-size: cover;
+        }
+    </style>
+{% endblock %}

@@ -1,0 +1,114 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ article.title }}{% endblock %}
+
+
+{% block body %}
+
+    <div class="container-fluid">
+        {# affichage des message flashes de type "success" si il y en a #}
+        {% include 'partials/flashes/success.html.twig' %}
+
+        {# affichage des message flashes de type "error" si il y en a #}
+        {% include 'partials/flashes/error.html.twig' %}
+
+        {# H1 #}
+        <div class="row">
+            <h1 class="col-12 text-center my-5">{{ article.title }}</h1>
+        </div>
+
+        {# Lien pour retourner à la liste des articles #}
+        <div class="row">
+            <p class="text-center col-12"><a href="{{ path('blog_publication_list') }} ">Retour liste des articles</a></p>
+        </div>
+
+        {# Affichage de l'article #}
+        <div class="row">
+            <div class="col-12 col-md-8 offset-md-2">
+                <div class="card my-2 bg-black">
+                    <div class="card-body">
+
+                        {# Affichage de la date de publication de l'article et du pseudonyme de son auteur #}
+                        <footer class="blockquote-footer mb-4">Publié le <strong>{{ article.publicationDate|date("d/m/Y à H\\hi") }}</strong> par <strong>{{ article.author.pseudonym }}</strong></footer>
+
+                        <div class="mb-2 article-content">{{ article.content|purify }}</div>
+
+                        {# Si l'utilisateur a le rôle admin, on affiche un petit menu avec des boutons de modification/suppression de l'article #}
+                        {% if is_granted('ROLE_ADMIN') %}
+
+                            <p class="mb-0 mt-3">
+                                <a href="{{ path('blog_publication_edit', {id: article.id}) }}" class="text-warning mr-3">
+                                    <i class="fas fa-edit mr-1"></i>
+                                    Modifier
+                                </a>
+
+
+
+                                <a onclick="return confirm('Êtes-vous sûr de vouloir supprimer la publication ?')" class="text-danger" href="{{ path('blog_publication_delete', {
+                                        id: article.id,
+                                        csrf_token: csrf_token('blog_publication_delete_' ~ article.id)
+                                    }) }}">
+                                    <i class="fas fa-trash-alt mr-1"></i>
+                                    Supprimer
+                                </a>
+                            </p>
+
+                        {% endif %}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        {# Bloc des commentaires #}
+        <div class="row">
+            <div class="col-12 col-md-8 offset-md-2">
+                <div class="bg-black p-4 my-4">
+
+                    {# Liste des commentaires lié à l'article #}
+                    <h2 class="text-center mb-5">Commentaires ({{ article.comments|length }})</h2>
+                    <div>
+                        {% for comment in article.comments %}
+                        <div class="card my-3 bg-dark">
+                            <div class="card-body row">
+
+                                <div class="mx-2 d-flex justify-content-center align-items-center comment-profil-photo bg-black">
+                                    <img class="img-fluid img-thumbnail-mini" src="{{ asset('images/profil_default.jpg')|imagine_filter('comment') }}" alt="">
+                                </div>
+
+                                {# Affichage de la date de publication du commentaire et du pseudo de son auteur #}
+                                <div class="col-12 col-sm mt-2 mt-sm-0">
+                                    <footer class="blockquote-footer mb-4">Ajouté par <strong class="text-light mr-1">{{ comment.author.pseudonym }} </strong>
+                                        <br class="d-sm-none">Le <strong class="text-light">{{ comment.publicationDate|date("d/m/Y à H\\hi") }}</strong></footer>
+                                    <p> {{ comment.content }} </p>
+                                </div>
+                                <div class="admin-button-article">
+
+                                    <a onclick="return confirm('Êtes-vous sûr de vouloir supprimer le commentaire ?')" class="text-danger" href="{{ path('blog_comment_delete', {
+                                        id: comment.id,
+                                        csrf_token: csrf_token('blog_comment_delete_' ~ comment.id)
+                                    }) }}">
+                                    <i class="fas fa-trash-alt mr-1"></i>
+                                    Supprimer
+                                </a>
+                                </div>
+
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            {{ form(form) }}
+                        {% else %}
+                            <a href="{{ path('app_login') }}">Veuillez vous connecter afin de laisser un commentaire !</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
